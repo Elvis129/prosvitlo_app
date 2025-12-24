@@ -1,0 +1,1392 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/app_button.dart';
+import '../../../core/router/app_router.dart';
+import '../../../data/models/address_with_status_model.dart';
+import '../../../data/models/outage_status_model.dart';
+import '../../../data/models/outage_info_model.dart';
+import '../viewmodel/home_cubit.dart';
+import '../viewmodel/home_state.dart';
+import '../../settings/viewmodel/settings_cubit.dart';
+import '../../settings/viewmodel/settings_state.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    context.read<HomeCubit>().loadData();
+    _checkAndShowDonationDialog();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    // Оновлюємо дані коли додаток повертається на передній план
+    if (state == AppLifecycleState.resumed) {
+      context.read<HomeCubit>().onAppResumed();
+    }
+  }
+
+  Future<void> _checkAndShowDonationDialog() async {
+    // Чекаємо поки завершиться ініціалізація
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    final homeCubit = context.read<HomeCubit>();
+    final donationUrl = await homeCubit.checkAndGetDonationUrl();
+
+    if (donationUrl != null && mounted) {
+      _showDonationDialog(donationUrl);
+      await homeCubit.markDonationDialogShown();
+    }
+  }
+
+  void _showDonationDialog(String donationUrl) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 400),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primaryYellow.withValues(alpha: 0.1),
+                AppColors.primaryBlue.withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Зображення банки
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                child: Image.asset(
+                  'assets/image/donat_mono.jpeg',
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryYellow,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.coffee,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Text(
+                            'Підтримай проєкт',
+                            style: AppTextStyles.heading2,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text(
+                      'Додаток безкоштовний і підтримується зусиллями розробника. '
+                      'Твоя підтримка допоможе розвивати функціонал і підтримувати сервіс.',
+                      style: AppTextStyles.body.copyWith(
+                        color: AppColors.slateGray,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.pop(context),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(color: AppColors.slateGray),
+                            ),
+                            child: Text(
+                              'Пізніше',
+                              style: AppTextStyles.body.copyWith(
+                                color: AppColors.slateGray,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              final uri = Uri.parse(donationUrl);
+                              try {
+                                await launchUrl(
+                                  uri,
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Не вдалося відкрити посилання',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryYellow,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              elevation: 0,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.favorite, size: 18),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Підтримати',
+                                  style: AppTextStyles.body.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<SettingsCubit, SettingsState>(
+      listener: (context, state) {
+        // Refresh HomeScreen when addresses are changed in SettingsScreen
+        if (state is SettingsAddressesChanged) {
+          context.read<HomeCubit>().refreshAddresses();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('ProСвітло'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                context.read<HomeCubit>().refresh();
+              },
+            ),
+          ],
+        ),
+        body: BlocBuilder<HomeCubit, HomeState>(
+          builder: (context, state) {
+            if (state is HomeLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is HomeError) {
+              return _buildError(context, state.message);
+            }
+
+            if (state is HomeLoaded) {
+              if (state.addresses.isEmpty) {
+                return _buildNoAddresses(context);
+              }
+
+              return RefreshIndicator(
+                onRefresh: () => context.read<HomeCubit>().refresh(),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  itemCount: state.addresses.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == state.addresses.length) {
+                      // Кнопка додавання нової адреси
+                      return _buildAddAddressButton(context);
+                    }
+
+                    final addressWithStatus = state.addresses[index];
+                    final isExpanded = state.expandedAddressIds.contains(
+                      addressWithStatus.address.id,
+                    );
+
+                    return _buildAddressCard(
+                      context,
+                      addressWithStatus,
+                      isExpanded,
+                    );
+                  },
+                ),
+              );
+            }
+
+            return const SizedBox();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildError(BuildContext context, String message) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
+            const SizedBox(height: AppSpacing.lg),
+            Text(
+              message,
+              style: AppTextStyles.body,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            AppButton(
+              text: 'Спробувати ще раз',
+              onPressed: () => context.read<HomeCubit>().loadData(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNoAddresses(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                color: AppColors.slateGray100,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.location_off,
+                size: 48,
+                color: AppColors.slateGray,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Text(
+              'Адрес ще немає',
+              style: AppTextStyles.heading2,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              'Додайте адреси для відстеження статусу електропостачання',
+              style: AppTextStyles.body,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppSpacing.xxl),
+            AppButton(
+              text: 'Додати адресу',
+              icon: Icons.add_location,
+              onPressed: () async {
+                await context.push(AppRouter.addressSearch);
+                if (mounted) {
+                  context.read<HomeCubit>().refreshAddresses();
+                }
+              },
+              width: double.infinity,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddressCard(
+    BuildContext context,
+    AddressWithStatus addressWithStatus,
+    bool isExpanded,
+  ) {
+    final address = addressWithStatus.address;
+    final status = addressWithStatus.status;
+    final isLoading = addressWithStatus.isLoading;
+
+    final bool hasPower = status?.status == PowerStatus.on;
+    final bool isPowerOff = status?.status == PowerStatus.off;
+
+    final Color statusColor = hasPower
+        ? AppColors.success
+        : isPowerOff
+        ? AppColors.error
+        : AppColors.warning;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Заголовок картки (завжди видимий)
+              Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isPowerOff ? Icons.power_off : Icons.power,
+                      color: statusColor,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          address.name,
+                          style: AppTextStyles.heading3.copyWith(fontSize: 18),
+                        ),
+                        const SizedBox(height: 4),
+                        if (isLoading)
+                          const SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        else if (status != null) ...[
+                          Row(
+                            children: [
+                              Text(
+                                isPowerOff ? 'Відключення' : 'Є світло',
+                                style: AppTextStyles.body.copyWith(
+                                  color: statusColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              // Час останнього оновлення
+                              if (addressWithStatus.lastUpdated != null) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  '• ${_formatLastUpdated(addressWithStatus.lastUpdated!)}',
+                                  style: AppTextStyles.small.copyWith(
+                                    color: AppColors.slateGray,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          // Показуємо час поточного або наступного відключення у згорнутому вигляді
+                          if (!isExpanded) ...[
+                            Builder(
+                              builder: (context) {
+                                final nextOutage = _findNextOutage(
+                                  addressWithStatus,
+                                  status,
+                                );
+
+                                if (nextOutage == null) return const SizedBox();
+
+                                final outageType = nextOutage['type'] as String;
+
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Row(
+                                    children: [
+                                      // Бейдж типу відключення
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: outageType == 'emergency'
+                                              ? AppColors.error.withValues(
+                                                  alpha: 0.15,
+                                                )
+                                              : outageType == 'planned'
+                                              ? AppColors.primaryBlue
+                                                    .withValues(alpha: 0.15)
+                                              : AppColors.warning.withValues(
+                                                  alpha: 0.15,
+                                                ),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          outageType == 'emergency'
+                                              ? 'АВАРІЙНЕ'
+                                              : outageType == 'planned'
+                                              ? 'ПЛАНОВЕ'
+                                              : 'ГРАФІК',
+                                          style: AppTextStyles.small.copyWith(
+                                            color: outageType == 'emergency'
+                                                ? AppColors.error
+                                                : outageType == 'planned'
+                                                ? AppColors.primaryBlue
+                                                : AppColors.warning,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      // Час/дата відключення
+                                      Expanded(
+                                        child: Builder(
+                                          builder: (context) {
+                                            if (outageType == 'schedule') {
+                                              // Для графікових - тільки час
+                                              final interval =
+                                                  nextOutage['interval']
+                                                      as OutageInterval;
+                                              return Text(
+                                                '${interval.startHour.toString().padLeft(2, '0')}:00 - ${interval.endHour.toString().padLeft(2, '0')}:00',
+                                                style: AppTextStyles.small
+                                                    .copyWith(
+                                                      color:
+                                                          AppColors.slateGray,
+                                                    ),
+                                              );
+                                            } else {
+                                              // Для аварійних/планових - дата і час
+                                              final outage =
+                                                  nextOutage['outage']
+                                                      as OutageInfoModel;
+                                              final now = DateTime.now();
+                                              final today = DateTime(
+                                                now.year,
+                                                now.month,
+                                                now.day,
+                                              );
+                                              final outageDate = DateTime(
+                                                outage.startTime.year,
+                                                outage.startTime.month,
+                                                outage.startTime.day,
+                                              );
+
+                                              String datePrefix = '';
+                                              if (outageDate.isAfter(today)) {
+                                                // Якщо не сьогодні - показуємо дату
+                                                datePrefix =
+                                                    '${outage.startTime.day.toString().padLeft(2, '0')}.${outage.startTime.month.toString().padLeft(2, '0')} ';
+                                              }
+
+                                              final timeStr =
+                                                  '${outage.startTime.hour.toString().padLeft(2, '0')}:${outage.startTime.minute.toString().padLeft(2, '0')} - ${outage.endTime.hour.toString().padLeft(2, '0')}:${outage.endTime.minute.toString().padLeft(2, '0')}';
+
+                                              return Text(
+                                                '$datePrefix$timeStr',
+                                                style: AppTextStyles.small
+                                                    .copyWith(
+                                                      color:
+                                                          AppColors.slateGray,
+                                                    ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ],
+                      ],
+                    ),
+                  ),
+                  // Іконка розгортання/згортання (клікабельна)
+                  IconButton(
+                    onPressed: () {
+                      context.read<HomeCubit>().toggleExpanded(address.id);
+                    },
+                    icon: Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: AppColors.slateGray,
+                    ),
+                  ),
+                ],
+              ),
+
+              // Розгорнута інформація
+              if (isExpanded) ...[
+                const SizedBox(height: AppSpacing.lg),
+                const Divider(),
+                const SizedBox(height: AppSpacing.md),
+
+                // Адреса
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      size: 20,
+                      color: AppColors.slateGray,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        address.fullAddress,
+                        style: AppTextStyles.body,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.sm),
+
+                // Черга
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.numbers,
+                      size: 20,
+                      color: AppColors.slateGray,
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Text('Черга: ${address.queue}', style: AppTextStyles.body),
+                  ],
+                ),
+
+                if (status != null) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  const Divider(),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // Тип статусу
+                  Row(
+                    children: [
+                      Icon(
+                        isPowerOff
+                            ? Icons.report_problem
+                            : Icons.check_circle_outline,
+                        size: 20,
+                        color: statusColor,
+                      ),
+                      const SizedBox(width: AppSpacing.sm),
+                      Text(
+                        isPowerOff
+                            ? 'Тип: Планове відключення'
+                            : 'Тип: Електропостачання активне',
+                        style: AppTextStyles.body.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+
+                  // // Поточне відключення (якщо є)
+                  // if (isPowerOff) ...[
+                  //   _buildCurrentOutageInfo(status),
+                  //   const SizedBox(height: AppSpacing.sm),
+                  // ],
+
+                  // Час оновлення
+                  if (status.lastUpdated != null) ...[
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.update,
+                          size: 20,
+                          color: AppColors.slateGray,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'Оновлено: ${_formatDateTime(status.lastUpdated!)}',
+                          style: AppTextStyles.small.copyWith(
+                            color: AppColors.slateGray,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+
+                  // Повідомлення
+                  if (status.notes != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              status.notes!,
+                              style: AppTextStyles.body,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+
+                  // Майбутні відключення
+                  if (status.upcomingOutages.isNotEmpty) ...[
+                    const Divider(),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.schedule,
+                          size: 20,
+                          color: AppColors.slateGray,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'Відключення сьогодні:',
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    ...status.upcomingOutages
+                        .take(5)
+                        .map(
+                          (interval) => Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              decoration: BoxDecoration(
+                                color: AppColors.warning.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.warning.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.flash_off,
+                                    color: AppColors.warning,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: AppSpacing.md),
+                                  Expanded(
+                                    child: Text(
+                                      interval.label,
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                  ] else if (isPowerOff) ...[
+                    const Divider(),
+                    const SizedBox(height: AppSpacing.md),
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.md),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle_outline,
+                            color: AppColors.success,
+                            size: 20,
+                          ),
+                          const SizedBox(width: AppSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              'Більше відключень на сьогодні не заплановано',
+                              style: AppTextStyles.body.copyWith(
+                                color: AppColors.success,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  // Відключення на завтра
+                  if (addressWithStatus.tomorrowStatus != null &&
+                      addressWithStatus
+                          .tomorrowStatus!
+                          .upcomingOutages
+                          .isNotEmpty) ...[
+                    const Divider(),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 20,
+                          color: AppColors.slateGray,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'Відключення на завтра:',
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    ...addressWithStatus.tomorrowStatus!.upcomingOutages
+                        .take(5)
+                        .map(
+                          (interval) => Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
+                            child: Container(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryBlue.withValues(
+                                  alpha: 0.1,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: AppColors.primaryBlue.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.flash_off,
+                                    color: AppColors.primaryBlue,
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: AppSpacing.md),
+                                  Expanded(
+                                    child: Text(
+                                      interval.label,
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                  ],
+
+                  // Аварійні відключення
+                  if (addressWithStatus.outages?.hasEmergencyOutage ??
+                      false) ...[
+                    const Divider(),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.warning,
+                          size: 20,
+                          color: AppColors.error,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'Аварійні відключення:',
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.error,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    // Активні аварійні відключення
+                    if (addressWithStatus.outages!.activeEmergency.isNotEmpty)
+                      ...addressWithStatus.outages!.activeEmergency.map(
+                        (outage) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.error,
+                                width: 2,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        'АКТИВНЕ',
+                                        style: AppTextStyles.caption.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Expanded(
+                                      child: Text(
+                                        outage.remName,
+                                        style: AppTextStyles.caption.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      color: AppColors.error,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Text(
+                                      outage.getTimeRange(),
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (outage.workType.isNotEmpty) ...[
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(
+                                    outage.workType,
+                                    style: AppTextStyles.caption,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    // Майбутні аварійні відключення
+                    if (addressWithStatus.outages!.upcomingEmergency.isNotEmpty)
+                      ...addressWithStatus.outages!.upcomingEmergency.map(
+                        (outage) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.error.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      outage.remName,
+                                      style: AppTextStyles.caption.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      color: AppColors.slateGray,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Text(
+                                      outage.getTimeRange(),
+                                      style: AppTextStyles.body,
+                                    ),
+                                  ],
+                                ),
+                                if (outage.workType.isNotEmpty) ...[
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(
+                                    outage.workType,
+                                    style: AppTextStyles.caption,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+
+                  // Планові відключення
+                  if (addressWithStatus.outages?.hasPlannedOutage ?? false) ...[
+                    const Divider(),
+                    const SizedBox(height: AppSpacing.md),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          size: 20,
+                          color: AppColors.primaryBlue,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          'Планові відключення:',
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    // Активні планові відключення
+                    if (addressWithStatus.outages!.activePlanned.isNotEmpty)
+                      ...addressWithStatus.outages!.activePlanned.map(
+                        (outage) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryBlue.withValues(
+                                alpha: 0.1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.primaryBlue,
+                                width: 2,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryBlue,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        'АКТИВНЕ',
+                                        style: AppTextStyles.caption.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Expanded(
+                                      child: Text(
+                                        outage.remName,
+                                        style: AppTextStyles.caption.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      color: AppColors.primaryBlue,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Text(
+                                      outage.getTimeRange(),
+                                      style: AppTextStyles.body.copyWith(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (outage.workType.isNotEmpty) ...[
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(
+                                    outage.workType,
+                                    style: AppTextStyles.caption,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    // Майбутні планові відключення
+                    if (addressWithStatus.outages!.upcomingPlanned.isNotEmpty)
+                      ...addressWithStatus.outages!.upcomingPlanned.map(
+                        (outage) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: Container(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryBlue.withValues(
+                                alpha: 0.05,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.primaryBlue.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      outage.remName,
+                                      style: AppTextStyles.caption.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      color: AppColors.slateGray,
+                                      size: 16,
+                                    ),
+                                    const SizedBox(width: AppSpacing.xs),
+                                    Text(
+                                      outage.getTimeRange(),
+                                      style: AppTextStyles.body,
+                                    ),
+                                  ],
+                                ),
+                                if (outage.workType.isNotEmpty) ...[
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Text(
+                                    outage.workType,
+                                    style: AppTextStyles.caption,
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddAddressButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+      child: OutlinedButton.icon(
+        onPressed: () async {
+          await context.push(AppRouter.addressSearch);
+          if (mounted) {
+            context.read<HomeCubit>().refreshAddresses();
+          }
+        },
+        icon: const Icon(Icons.add),
+        label: const Text('Додати ще одну адресу'),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          side: BorderSide(
+            color: AppColors.primaryBlue.withValues(alpha: 0.5),
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+
+  OutageInterval? _findCurrentOrNextOutage(OutageStatusModel status) {
+    final now = DateTime.now();
+    final currentHour = now.hour;
+    final currentMinute = now.minute;
+    final currentTimeInMinutes = currentHour * 60 + currentMinute;
+
+    // Спочатку шукаємо ПОТОЧНЕ активне відключення
+    for (final interval in status.upcomingOutages) {
+      final startTimeInMinutes = interval.startHour * 60;
+      final endTimeInMinutes = interval.endHour * 60;
+
+      if (currentTimeInMinutes >= startTimeInMinutes &&
+          currentTimeInMinutes < endTimeInMinutes) {
+        return interval; // Повертаємо поточне активне відключення
+      }
+    }
+
+    // Якщо поточного немає, шукаємо наступне майбутнє відключення
+    for (final interval in status.upcomingOutages) {
+      final startTimeInMinutes = interval.startHour * 60;
+      if (startTimeInMinutes > currentTimeInMinutes) {
+        return interval; // Повертаємо перше майбутнє відключення
+      }
+    }
+
+    return null; // Немає ні поточного, ні майбутніх відключень
+  }
+
+  // Widget _buildCurrentOutageInfo(OutageStatusModel? status) {
+  //   if (status == null) return const SizedBox();
+
+  //   final currentOutage = _findCurrentOutage(status);
+  //   if (currentOutage == null) return const SizedBox();
+
+  //   final now = DateTime.now();
+  //   final currentHour = now.hour;
+  //   final currentMinute = now.minute;
+
+  //   // Визначаємо чи відключення зараз активне
+  //   final currentTimeInMinutes = currentHour * 60 + currentMinute;
+  //   final startTimeInMinutes = currentOutage.startHour * 60;
+  //   final endTimeInMinutes = currentOutage.endHour * 60;
+  //   final isActive =
+  //       currentTimeInMinutes >= startTimeInMinutes &&
+  //       currentTimeInMinutes < endTimeInMinutes;
+
+  //   return Row(
+  //     children: [
+  //       Icon(
+  //         isActive ? Icons.flash_off : Icons.schedule,
+  //         size: 20,
+  //         color: isActive ? AppColors.error : AppColors.warning,
+  //       ),
+  //       const SizedBox(width: AppSpacing.sm),
+  //       Expanded(
+  //         child: Text(
+  //           isActive
+  //               ? 'Відключено з ${currentOutage.startHour.toString().padLeft(2, '0')}:00, очікується до ${currentOutage.endHour.toString().padLeft(2, '0')}:00'
+  //               : 'Наступне відключення: ${currentOutage.startHour.toString().padLeft(2, '0')}:00 - ${currentOutage.endHour.toString().padLeft(2, '0')}:00',
+  //           style: AppTextStyles.body.copyWith(
+  //             color: isActive ? AppColors.error : AppColors.warning,
+  //             fontWeight: FontWeight.w600,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  /// Знаходить найближче відключення будь-якого типу
+  Map<String, dynamic>? _findNextOutage(
+    AddressWithStatus addressWithStatus,
+    OutageStatusModel? status,
+  ) {
+    final now = DateTime.now();
+
+    // Збираємо всі можливі відключення з часом початку
+    final List<Map<String, dynamic>> allOutages = [];
+
+    // Додаємо активні аварійні (вони вже йдуть зараз)
+    if (addressWithStatus.outages != null) {
+      for (final outage in addressWithStatus.outages!.activeEmergency) {
+        allOutages.add({
+          'type': 'emergency',
+          'subtype': 'active',
+          'time': outage.startTime,
+          'outage': outage,
+        });
+      }
+
+      // Додаємо активні планові (вони вже йдуть зараз)
+      for (final outage in addressWithStatus.outages!.activePlanned) {
+        allOutages.add({
+          'type': 'planned',
+          'subtype': 'active',
+          'time': outage.startTime,
+          'outage': outage,
+        });
+      }
+
+      // Додаємо майбутні аварійні
+      for (final outage in addressWithStatus.outages!.upcomingEmergency) {
+        allOutages.add({
+          'type': 'emergency',
+          'subtype': 'upcoming',
+          'time': outage.startTime,
+          'outage': outage,
+        });
+      }
+
+      // Додаємо майбутні планові
+      for (final outage in addressWithStatus.outages!.upcomingPlanned) {
+        allOutages.add({
+          'type': 'planned',
+          'subtype': 'upcoming',
+          'time': outage.startTime,
+          'outage': outage,
+        });
+      }
+    }
+
+    // Додаємо графікові відключення
+    if (status != null && status.upcomingOutages.isNotEmpty) {
+      final scheduleInterval = _findCurrentOrNextOutage(status);
+      if (scheduleInterval != null) {
+        // Створюємо DateTime для графікового відключення (сьогодні)
+        final scheduleTime = DateTime(
+          now.year,
+          now.month,
+          now.day,
+          scheduleInterval.startHour.toInt(),
+        );
+
+        allOutages.add({
+          'type': 'schedule',
+          'subtype':
+              scheduleInterval.startHour * 60 <= now.hour * 60 + now.minute
+              ? 'active'
+              : 'upcoming',
+          'time': scheduleTime,
+          'interval': scheduleInterval,
+        });
+      }
+    }
+
+    // Якщо немає відключень
+    if (allOutages.isEmpty) return null;
+
+    // Сортуємо за часом початку
+    allOutages.sort(
+      (a, b) => (a['time'] as DateTime).compareTo(b['time'] as DateTime),
+    );
+
+    // Повертаємо найближче
+    return allOutages.first;
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final date = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    final timeStr =
+        '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+
+    if (date == today) {
+      return 'сьогодні о $timeStr';
+    } else if (date == today.subtract(const Duration(days: 1))) {
+      return 'вчора о $timeStr';
+    } else {
+      return '${dateTime.day}.${dateTime.month}.${dateTime.year} о $timeStr';
+    }
+  }
+
+  /// Форматує час останнього оновлення
+  String _formatLastUpdated(DateTime lastUpdated) {
+    final now = DateTime.now();
+    final difference = now.difference(lastUpdated);
+
+    if (difference.inMinutes < 1) {
+      return 'щойно';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} хв тому';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} год тому';
+    } else {
+      return '${difference.inDays} дн тому';
+    }
+  }
+}

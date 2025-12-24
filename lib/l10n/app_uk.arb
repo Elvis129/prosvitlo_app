@@ -1,0 +1,434 @@
+{
+  "@@locale": "uk",
+  
+  "appTitle": "ProСвітло",
+  "@appTitle": {
+    "description": "Назва додатку"
+  },
+  
+  "ok": "OK",
+  "cancel": "Скасувати",
+  "save": "Зберегти",
+  "delete": "Видалити",
+  "edit": "Редагувати",
+  "close": "Закрити",
+  "retry": "Спробувати ще раз",
+  "later": "Пізніше",
+  "error": "Помилка",
+  "loading": "Завантаження...",
+  "noData": "Немає даних",
+  "copy": "Копіювати",
+  "support": "Підтримати",
+  
+  "errorLoadingData": "Не вдалося завантажити дані",
+  "errorOpeningLink": "Не вдалося відкрити посилання",
+  "errorLoadingImage": "Помилка завантаження зображення",
+  "errorLoadingAddress": "Не вдалося отримати інформацію про адресу",
+  "errorAddressAlreadyAdded": "Ця адреса вже додана",
+  
+  "homeTitle": "Головна",
+  "homeNoAddressesTitle": "Адрес ще немає",
+  "homeNoAddressesDescription": "Додайте адреси для відстеження статусу електропостачання",
+  "homeAddAddress": "Додати адресу",
+  "homeAddOneMoreAddress": "Додати ще одну адресу",
+  "homePowerOn": "Є світло",
+  "homePowerOff": "Відключення",
+  "homeActive": "АКТИВНЕ",
+  
+  "donationBannerTitle": "Зарядити розробника",
+  "donationBannerSubtitle": "Підтримати розробку додатка ☕",
+  "donationDialogTitle": "Підтримай проєкт",
+  "donationDialogMessage": "Додаток безкоштовний і підтримується зусиллями розробника. Твоя підтримка допоможе розвивати функціонал і підтримувати сервіс.",
+  "donationCardNumberTitle": "Номер картки",
+  "donationCardNumberLabel": "Підтримка розробника:",
+  
+  "outageTypeEmergency": "АВАРІЙНЕ",
+  "outageTypePlanned": "ПЛАНОВЕ",
+  "outageTypeScheduled": "ГРАФІК",
+  "outageEmergencyTitle": "Аварійні відключення:",
+  "outagePlannedTitle": "Планові відключення:",
+  "outageStatusType": "Тип: {type}",
+  "@outageStatusType": {
+    "description": "Тип статусу відключення",
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "outageStatusPlanned": "Тип: Планове відключення",
+  "outageStatusActive": "Тип: Електропостачання активне",
+  
+  "outageTodayTitle": "Відключення сьогодні:",
+  "outageTomorrowTitle": "Відключення на завтра:",
+  "outageNoMoreToday": "Більше відключень на сьогодні не заплановано",
+  
+  "settingsTitle": "Налаштування",
+  "settingsMyAddresses": "Мої адреси",
+  "settingsAddAddress": "Додати",
+  "settingsAppearance": "Вигляд",
+  "settingsThemeLight": "Світла тема",
+  "settingsThemeDark": "Темна тема",
+  "settingsThemeSystem": "Системна",
+  "settingsNotifications": "Сповіщення",
+  "settingsNotificationsEnable": "Увімкнути сповіщення",
+  "settingsNotificationsDescription": "Отримувати повідомлення про відключення",
+  
+  "settingsDeleteAddressTitle": "Видалити адресу?",
+  "settingsDeleteAddressMessage": "Ви впевнені що хочете видалити \"{addressName}\"?",
+  "@settingsDeleteAddressMessage": {
+    "description": "Підтвердження видалення адреси",
+    "placeholders": {
+      "addressName": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsDisableNotificationsTitle": "Вимкнути сповіщення?",
+  "settingsDisableNotificationsMessage": "Ви не будете отримувати сповіщення про актуальні відключення.",
+  "settingsDisableNotifications": "Вимкнути",
+  
+  "addressSearchTitle": "Вибір адреси",
+  "addressSearchSaving": "Збереження адреси...",
+  "addressSearchSaved": "Адресу збережено",
+  "addressSearchSaveButton": "Зберегти адресу",
+  
+  "addressFieldCity": "Населений пункт",
+  "addressFieldCityHint": "Почніть вводити назву міста...",
+  "addressFieldStreet": "Вулиця",
+  "addressFieldStreetHint": "Почніть вводити назву вулиці...",
+  "addressFieldStreetDisabled": "Спочатку виберіть місто",
+  "addressFieldHouse": "Будинок",
+  "addressFieldHouseHint": "Почніть вводити номер будинку...",
+  "addressFieldHouseDisabled": "Спочатку виберіть вулицю",
+  
+  "addressNameTitle": "Назва адреси",
+  "addressNameHint": "Наприклад: Дім, Робота, Батьки...",
+  "addressNameDefault": "Дім",
+  "addressNameSuggestions": "Підказки:",
+  "addressNameRequired": "Будь ласка, введіть назву адреси",
+  
+  "addressSuggestionHome": "🏠 Дім",
+  "addressSuggestionWork": "💼 Робота",
+  "addressSuggestionParents": "👨‍👩‍👧 Батьки",
+  "addressSuggestionSchool": "🏫 Школа",
+  "addressSuggestionGrandma": "👵 Бабуся",
+  "addressSuggestionOffice": "🏢 Офіс",
+  
+  "addressSearchInstruction": "Виберіть послідовно: {city} → {street} → {house}",
+  "@addressSearchInstruction": {
+    "description": "Інструкція для вибору адреси",
+    "placeholders": {
+      "city": {
+        "type": "String",
+        "example": "місто"
+      },
+      "street": {
+        "type": "String",
+        "example": "вулиця"
+      },
+      "house": {
+        "type": "String",
+        "example": "будинок"
+      }
+    }
+  },
+  
+  "errorUnexpected": "Неочікувана помилка: {error}",
+  "@errorUnexpected": {
+    "description": "Неочікувана помилка",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "деталі помилки"
+      }
+    }
+  },
+  
+  "errorSearchCities": "Помилка пошуку міст: {error}",
+  "@errorSearchCities": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorSelectCity": "Помилка вибору міста: {error}",
+  "@errorSelectCity": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorSearchStreets": "Помилка пошуку вулиць: {error}",
+  "@errorSearchStreets": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorLoadingHouses": "Помилка завантаження будинків: {error}",
+  "@errorLoadingHouses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorSearchHouses": "Помилка пошуку будинків: {error}",
+  "@errorSearchHouses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "onboardingAppTitle": "ProСвітло",
+  "onboardingAppSubtitle": "Слідкуйте за станом електропостачання\nу Хмельницькій області",
+  
+  "addressValidationCity": "Будь ласка, виберіть місто",
+  "addressValidationStreet": "Будь ласка, виберіть вулицю",
+  "addressValidationHouse": "Будь ласка, виберіть будинок",
+  
+  "aboutTitle": "Інформація",
+  "aboutFeedback": "Зворотній зв'язок",
+  "aboutAppInfo": "Про додаток",
+  "aboutDeveloperContact": "Зв'язок з розробником",
+  "aboutDevMessage": "Додаток знаходиться на етапі розробки та тестування. Якщо ви знайшли помилку чи маєте пропозицію — пишіть мені в Telegram.",
+  
+  "aboutVersion": "Версія",
+  "aboutDeveloper": "Розробник",
+  "aboutDataSource": "Джерело даних",
+  "aboutPrivacyPolicy": "Політика конфіденційності",
+  
+  "disclaimerTitle": "Важлива інформація",
+  "disclaimerMessage": "Це неофіційний додаток. Вся інформація про відключення електроенергії береться з офіційного сайту ДТЕК Хмельницькі електромережі (hoe.com.ua). Додаток створений для зручного доступу до графіків відключень.",
+  
+  "scheduleTitle": "Графіки відключень",
+  "scheduleNotFound": "Графіки не знайдено",
+  "scheduleNotFoundMessage": "Спробуйте оновити пізніше",
+  "scheduleUpdateTime": "щойно",
+  
+  "notificationsTitle": "Сповіщення",
+  "notificationsEmpty": "Поки що немає сповіщень",
+  
+  "onboardingFeature1Title": "Кілька адрес",
+  "onboardingFeature1Description": "Відстежуйте стан за усіма вашими адресами",
+  "onboardingFeature2Title": "Графіки",
+  "onboardingFeature2Description": "Для планових, аварійних та погодинних відключень",
+  "onboardingFeature3Title": "Сповіщення",
+  "onboardingFeature3Description": "Отримуйте push-повідомлення про всі відключення",
+  "onboardingStart": "Почати",
+  
+  "errorSavingAddress": "Помилка збереження адреси: {error}",
+  "@errorSavingAddress": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorSavingOnboarding": "Помилка збереження: {error}",
+  "@errorSavingOnboarding": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorLoadingNotifications": "Помилка завантаження повідомлень: {error}",
+  "@errorLoadingNotifications": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorLoadingAddresses": "Помилка завантаження адрес: {error}",
+  "@errorLoadingAddresses": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorAddingAddress": "Помилка додавання адреси: {error}",
+  "@errorAddingAddress": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorDeletingAddress": "Помилка видалення адреси: {error}",
+  "@errorDeletingAddress": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorTogglingNotifications": "Помилка перемикання сповіщень: {error}",
+  "@errorTogglingNotifications": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorUpdatingToken": "Помилка оновлення токену: {error}",
+  "@errorUpdatingToken": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorClearingCache": "Помилка очищення кешу: {error}",
+  "@errorClearingCache": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorLoadingHomeData": "Помилка завантаження даних: {error}",
+  "@errorLoadingHomeData": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "errorGeneric": "Помилка: {error}",
+  "@errorGeneric": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "scheduleUpdated": "Оновлено: {time}",
+  "@scheduleUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "addressQueue": "Черга: {queue}",
+  "@addressQueue": {
+    "placeholders": {
+      "queue": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "outageTypePlannedOutage": "Тип: Планове відключення",
+  "outageTypeActiveSupply": "Тип: Електропостачання активне",
+  
+  "lastUpdated": "Оновлено: {time}",
+  "@lastUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "telegramChannelDescription": "Підпишіться на наш Telegram канал для отримання актуальної інформації про відключення електроенергії в Хмельницькій області.",
+  
+  "notificationsStoragePeriod": "Сповіщення зберігаються 5 днів",
+  
+  "homeDebugActiveEmergency": "аварійних активних",
+  "homeDebugUpcomingEmergency": "аварійних майбутніх",
+  "homeDebugActivePlanned": "планових активних",
+  "homeDebugUpcomingPlanned": "планових майбутніх",
+  
+  "scheduleUpdatedMinutesAgo": "{minutes} хв тому",
+  "@scheduleUpdatedMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "scheduleUpdatedHoursAgo": "{hours} год тому",
+  "@scheduleUpdatedHoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "scheduleUpdatedDaysAgo": "{days} дн тому",
+  "@scheduleUpdatedDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  
+  "pushNotificationsTitle": "Push Сповіщення",
+  "telegramChannelTitle": "Telegram канал",
+  "notificationChannelName": "ProСвітло Повідомлення",
+  "notificationChannelDescription": "Повідомлення про відключення електроенергії",
+    "serviceErrorCheckSchedule": "Перегляньте графік відключень",
+  "serviceErrorGettingData": "Помилка отримання даних",
+  "serviceErrorInvalidAddress": "Некоректний формат адреси",
+  "serviceErrorGettingStatus": "Помилка отримання статусу: {error}",
+  "@serviceErrorGettingStatus": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "serviceErrorGettingOutages": "Помилка отримання відключень: {error}",
+  "@serviceErrorGettingOutages": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "serviceErrorTimeout": "Час очікування вичерпано. Перевірте підключення до інтернету.",
+  "serviceErrorConnection": "Не вдалося підключитися до сервера.",
+  "serviceErrorScheduleNotFound": "Графіки не знайдено",
+  "serviceErrorLoadingSchedule": "Помилка завантаження графіків",
+  "serviceErrorInvalidResponse": "Невірний формат відповіді від сервера",
+  "serviceErrorNetwork": "Помилка мережі",
+  "serviceErrorUnknown": "Невідома помилка: {error}",
+  "@serviceErrorUnknown": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "serviceErrorLoadingLatestSchedule": "Помилка завантаження графіка",
+    "tooltipInfo": "Інформація"
+}
