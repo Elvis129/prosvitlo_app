@@ -28,15 +28,13 @@ class AdMobService {
     }
   }
 
-  /// Test Banner Ad Unit ID for Android
-  /// REPLACE with real one: ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+  /// Production Banner Ad Unit ID for Android
   static const String _androidBannerAdUnitId =
-      'ca-app-pub-3940256099942544/6300978111';
+      'ca-app-pub-9919446828040983/5747494503';
 
-  /// Test Banner Ad Unit ID for iOS
-  /// REPLACE with real one: ca-app-pub-XXXXXXXXXXXXXXXX/YYYYYYYYYY
+  /// Production Banner Ad Unit ID for iOS
   static const String _iosBannerAdUnitId =
-      'ca-app-pub-3940256099942544/2934735716';
+      'ca-app-pub-9919446828040983/5747494503';
 
   /// Get Banner Ad Unit ID for current platform
   String get bannerAdUnitId {

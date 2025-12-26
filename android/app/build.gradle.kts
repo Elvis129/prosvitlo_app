@@ -18,7 +18,7 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.yuzak.prosvitlo"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -33,8 +33,8 @@ android {
 
     defaultConfig {
         applicationId = "com.yuzak.prosvitlo"
-        minSdk = flutter.minSdkVersion  // Firebase Messaging requires 23+
-        targetSdk = 34  // Required for Play Store in 2024+
+        minSdk = flutter.minSdkVersion  
+        targetSdk = 36 
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

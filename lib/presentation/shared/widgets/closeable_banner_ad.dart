@@ -73,7 +73,9 @@ class _CloseableBannerAdState extends State<CloseableBannerAd> {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -101,12 +103,14 @@ class _CloseableBannerAdState extends State<CloseableBannerAd> {
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.close,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       size: 16,
                     ),
                   ),

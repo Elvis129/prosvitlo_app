@@ -86,9 +86,9 @@
 		<string>tel</string>
 		<string>mailto</string>
 	</array>
-	<!-- AdMob App ID (Test ID for development) -->
+	<!-- AdMob App ID (Production) -->
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-9919446828040983~1021781439</string>
 	<!-- iOS 14+ App Tracking Transparency -->
 	<key>SKAdNetworkItems</key>
 	<array>
