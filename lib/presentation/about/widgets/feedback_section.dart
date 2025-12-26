@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/config/app_links.dart';
@@ -31,10 +32,15 @@ class FeedbackSection extends StatelessWidget {
                     size: 24,
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    context.l10n.aboutDeveloperContact,
-                    style: AppTextStyles.body.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: AutoSizeText(
+                      maxLines: 2,
+                      minFontSize: 10,
+                      overflow: TextOverflow.ellipsis,
+                      context.l10n.aboutDeveloperContact,
+                      style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -56,14 +62,22 @@ class FeedbackSection extends StatelessWidget {
                     size: 18,
                   ),
                   const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    '@ProSvitlo_Khm',
-                    style: AppTextStyles.body.copyWith(
-                      color: AppColors.primaryBlue,
-                      fontWeight: FontWeight.w600,
+
+                  Expanded(
+                    child: AutoSizeText(
+                      '@ProSvitlo_Khm',
+                      maxLines: 1,
+                      minFontSize: 10,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.body.copyWith(
+                        color: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  const Spacer(),
+
+                  const SizedBox(width: AppSpacing.xs),
+
                   const Icon(
                     Icons.open_in_new,
                     size: 18,

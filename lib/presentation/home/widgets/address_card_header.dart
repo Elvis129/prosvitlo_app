@@ -68,34 +68,38 @@ class AddressCardHeader extends StatelessWidget {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
               else if (status != null) ...[
-                Row(
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text(
                       isPowerOff
                           ? context.l10n.homePowerOff
                           : context.l10n.homePowerOn,
-                      style: AppTextStyles.body.copyWith(
+                      style: AppTextStyles.heading3.copyWith(
                         color: statusColor,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     // Last updated time
                     if (addressWithStatus.lastUpdated != null) ...[
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.access_time,
-                        size: 12,
-                        color: AppColors.slateGray,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        TimeFormatter.formatRelativeTime(
-                          addressWithStatus.lastUpdated!,
-                        ),
-                        style: AppTextStyles.small.copyWith(
-                          color: AppColors.slateGray,
-                          fontSize: 11,
-                        ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 12,
+                            color: AppColors.slateGray,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            TimeFormatter.formatRelativeTime(
+                              addressWithStatus.lastUpdated!,
+                            ),
+                            style: AppTextStyles.small.copyWith(
+                              color: AppColors.slateGray,
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/theme/app_colors.dart';
@@ -62,7 +63,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           ? AppColors.backgroundDark
           : AppColors.backgroundLight,
       appBar: AppBar(
-        title: Text(context.l10n.scheduleTitle),
+        title: AutoSizeText(maxLines: 1, context.l10n.scheduleTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

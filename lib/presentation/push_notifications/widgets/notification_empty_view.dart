@@ -20,7 +20,11 @@ class NotificationEmptyView extends StatelessWidget {
             color: AppColors.slateGray400,
           ),
           const SizedBox(height: AppSpacing.xl),
-          Text(context.l10n.notificationsEmpty, style: AppTextStyles.heading2),
+          Text(
+            context.l10n.notificationsEmpty,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.heading2,
+          ),
           const SizedBox(height: AppSpacing.sm),
           Text(
             context.l10n.notificationsStoragePeriod,

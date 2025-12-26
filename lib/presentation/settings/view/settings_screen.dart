@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -57,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.settingsTitle),
+        title: AutoSizeText(maxLines: 1, context.l10n.settingsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -127,9 +128,11 @@ class _SettingsScreenState extends State<SettingsScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              context.l10n.settingsMyAddresses,
-              style: AppTextStyles.heading3,
+            Expanded(
+              child: Text(
+                context.l10n.settingsMyAddresses,
+                style: AppTextStyles.heading3,
+              ),
             ),
             TextButton.icon(
               onPressed: () async {

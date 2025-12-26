@@ -432,7 +432,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           }
         },
         icon: const Icon(Icons.add),
-        label: Text(context.l10n.homeAddOneMoreAddress),
+        label: Text(
+          context.l10n.homeAddOneMoreAddress,
+          textAlign: TextAlign.center,
+        ),
         style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.all(AppSpacing.lg),
           shape: RoundedRectangleBorder(

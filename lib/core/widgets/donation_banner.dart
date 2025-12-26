@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import '../extensions/localizations_extension.dart';
 
@@ -46,7 +47,9 @@ class DonationBanner extends StatelessWidget {
               left: 16,
               right: 16,
               child: Center(
-                child: Text(
+                child: AutoSizeText(
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   context.l10n.donationBannerSubtitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -92,7 +95,9 @@ class DonationBanner extends StatelessWidget {
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
+                        child: AutoSizeText(
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           context.l10n.donationBannerTitle,
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(

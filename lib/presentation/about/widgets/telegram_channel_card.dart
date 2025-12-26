@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/config/app_links.dart';
@@ -31,10 +32,14 @@ class TelegramChannelCard extends StatelessWidget {
                     size: 24,
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    context.l10n.telegramChannelTitle,
-                    style: AppTextStyles.body.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: AutoSizeText(
+                      maxLines: 1,
+                      minFontSize: 10,
+                      context.l10n.telegramChannelTitle,
+                      style: AppTextStyles.body.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],
@@ -56,14 +61,19 @@ class TelegramChannelCard extends StatelessWidget {
                     size: 18,
                   ),
                   const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    '@ProSvitloKhm',
-                    style: AppTextStyles.body.copyWith(
-                      color: AppColors.primaryBlue,
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: AutoSizeText(
+                      '@ProSvitloKhm',
+                      maxLines: 1,
+                      minFontSize: 8,
+                      style: AppTextStyles.body.copyWith(
+                        color: AppColors.primaryBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: AppSpacing.xs),
+
                   const Icon(
                     Icons.open_in_new,
                     size: 18,

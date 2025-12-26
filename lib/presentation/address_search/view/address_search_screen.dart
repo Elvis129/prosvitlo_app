@@ -193,9 +193,22 @@ class _AddressSearchScreenState extends State<AddressSearchScreen> {
           _buildNameField(context, state),
 
           // Error message or save button
-          if (state.selectedCity != null &&
-              state.selectedStreet != null &&
-              _houseController.text.isNotEmpty) ...[
+          if (((state.selectedCity != null &&
+                      state.selectedStreet != null &&
+                      _houseController.text.isNotEmpty) ||
+                  (widget.addressToEdit != null &&
+                      _cityController.text.isNotEmpty &&
+                      _streetController.text.isNotEmpty &&
+                      _houseController.text.isNotEmpty)) &&
+              (widget.addressToEdit == null ||
+                  _cityController.text.trim() !=
+                      widget.addressToEdit!.city.trim() ||
+                  _streetController.text.trim() !=
+                      widget.addressToEdit!.street.trim() ||
+                  _houseController.text.trim() !=
+                      widget.addressToEdit!.house.trim() ||
+                  _nameController.text.trim() !=
+                      widget.addressToEdit!.name.trim())) ...[
             const SizedBox(height: AppSpacing.xl),
             if (state.errorMessage != null)
               ErrorBanner(message: state.errorMessage!)

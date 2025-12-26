@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -28,9 +29,15 @@ class ScheduledOutagesSection extends StatelessWidget {
             children: [
               const Icon(Icons.schedule, size: 20, color: AppColors.slateGray),
               const SizedBox(width: AppSpacing.sm),
-              Text(
-                context.l10n.outageTodayTitle,
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
+              Expanded(
+                child: AutoSizeText(
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  context.l10n.outageTodayTitle,
+                  style: AppTextStyles.body.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ],
           ),

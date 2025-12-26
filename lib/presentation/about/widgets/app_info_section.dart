@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/config/app_links.dart';
@@ -79,7 +80,9 @@ class AppInfoSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label, style: AppTextStyles.caption),
-                  Text(
+                  AutoSizeText(
+                    maxLines: 1,
+                    minFontSize: 10,
                     value,
                     style: AppTextStyles.body.copyWith(
                       fontWeight: FontWeight.w500,

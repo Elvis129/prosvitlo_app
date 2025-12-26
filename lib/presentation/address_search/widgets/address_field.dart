@@ -52,10 +52,12 @@ class AddressField extends StatelessWidget {
               color: enabled ? null : AppColors.slateGray400,
             ),
             const SizedBox(width: AppSpacing.sm),
-            Text(
-              label,
-              style: AppTextStyles.heading3.copyWith(
-                color: enabled ? null : AppColors.slateGray400,
+            Expanded(
+              child: Text(
+                label,
+                style: AppTextStyles.heading3.copyWith(
+                  color: enabled ? null : AppColors.slateGray400,
+                ),
               ),
             ),
             if (required)

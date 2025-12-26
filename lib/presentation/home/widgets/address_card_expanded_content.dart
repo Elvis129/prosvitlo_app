@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -51,9 +52,13 @@ class AddressCardExpandedContent extends StatelessWidget {
           children: [
             const Icon(Icons.numbers, size: 20, color: AppColors.slateGray),
             const SizedBox(width: AppSpacing.sm),
-            Text(
-              context.l10n.addressQueue(address.queue),
-              style: AppTextStyles.body,
+            Expanded(
+              child: AutoSizeText(
+                maxLines: 2,
+                minFontSize: 10,
+                context.l10n.addressQueue(address.queue),
+                style: AppTextStyles.body,
+              ),
             ),
           ],
         ),
@@ -72,13 +77,17 @@ class AddressCardExpandedContent extends StatelessWidget {
                 color: statusColor,
               ),
               const SizedBox(width: AppSpacing.sm),
-              Text(
-                isPowerOff
-                    ? context.l10n.outageTypePlannedOutage
-                    : context.l10n.outageTypeActiveSupply,
-                style: AppTextStyles.body.copyWith(
-                  color: statusColor,
-                  fontWeight: FontWeight.w600,
+              Expanded(
+                child: AutoSizeText(
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  isPowerOff
+                      ? context.l10n.outageTypePlannedOutage
+                      : context.l10n.outageTypeActiveSupply,
+                  style: AppTextStyles.body.copyWith(
+                    color: statusColor,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -91,12 +100,16 @@ class AddressCardExpandedContent extends StatelessWidget {
               children: [
                 const Icon(Icons.update, size: 20, color: AppColors.slateGray),
                 const SizedBox(width: AppSpacing.sm),
-                Text(
-                  context.l10n.lastUpdated(
-                    TimeFormatter.formatDateTime(status!.lastUpdated!),
-                  ),
-                  style: AppTextStyles.small.copyWith(
-                    color: AppColors.slateGray,
+                Expanded(
+                  child: AutoSizeText(
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    context.l10n.lastUpdated(
+                      TimeFormatter.formatDateTime(status!.lastUpdated!),
+                    ),
+                    style: AppTextStyles.small.copyWith(
+                      color: AppColors.slateGray,
+                    ),
                   ),
                 ),
               ],
