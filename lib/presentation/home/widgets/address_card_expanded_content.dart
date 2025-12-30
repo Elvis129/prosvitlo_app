@@ -117,10 +117,13 @@ class AddressCardExpandedContent extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
           ],
 
-          // Notes (only show if not overridden by scheduled outage)
-          // Don't show generic status notes when there's an active scheduled outage,
-          // as they may be contradictory (e.g., "power on" during scheduled outage)
-          if (status!.notes != null && !hasActiveScheduledOutage) ...[
+          // Notes (only show if there are no active outages)
+          // Don't show generic status notes when there's any active outage,
+          // as they may be contradictory (e.g., "power on" during actual outage)
+          if (status!.notes != null &&
+              !hasActiveScheduledOutage &&
+              (addressWithStatus.outages?.activeEmergency.isEmpty ?? true) &&
+              (addressWithStatus.outages?.activePlanned.isEmpty ?? true)) ...[
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(

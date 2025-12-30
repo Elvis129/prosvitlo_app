@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -254,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('ProСвітло'),
+          title: const AutoSizeText(maxLines: 1, 'ProСвітло'),
           actions: [
             IconButton(
               icon: const Icon(Icons.refresh),
