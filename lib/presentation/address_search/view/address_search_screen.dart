@@ -282,12 +282,27 @@ class _AddressSearchScreenState extends State<AddressSearchScreen> {
       return;
     }
 
+    final cubit = context.read<AddressSearchCubit>();
+
+    // Check if only name changed (editing mode with same address)
+    if (widget.addressToEdit != null &&
+        _cityController.text.trim() == widget.addressToEdit!.city.trim() &&
+        _streetController.text.trim() == widget.addressToEdit!.street.trim() &&
+        _houseController.text.trim() == widget.addressToEdit!.house.trim() &&
+        name != widget.addressToEdit!.name.trim()) {
+      // Only name changed - update directly
+      await cubit.deleteAddress(widget.addressToEdit!.id);
+      if (!mounted) return;
+
+      await cubit.saveAddressWithName(widget.addressToEdit!, name);
+      return;
+    }
+
     if (state.selectedCity == null || state.selectedStreet == null) {
       return;
     }
 
     // Call selectHouse to get full address information
-    final cubit = context.read<AddressSearchCubit>();
     await cubit.selectHouse(_houseController.text);
 
     if (!mounted) return;
