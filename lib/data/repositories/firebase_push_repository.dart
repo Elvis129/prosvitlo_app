@@ -247,6 +247,14 @@ class FirebasePushRepository {
     int limit = 50,
     String? notificationType,
   }) async {
+    final deviceId = _messagingService.deviceId;
+
+    if (deviceId == null) {
+      // Return from cache if no deviceId
+      logInfo('📦 [getNotifications] No device_id, returning from CACHE');
+      return _getCachedNotifications();
+    }
+
     try {
       final queryParams = {
         'limit': limit.toString(),
@@ -254,7 +262,7 @@ class FirebasePushRepository {
       };
 
       final response = await _apiClient.getList(
-        '/notifications',
+        '/notifications/$deviceId',
         queryParameters: queryParams,
       );
 
