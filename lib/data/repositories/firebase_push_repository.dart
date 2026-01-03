@@ -251,7 +251,6 @@ class FirebasePushRepository {
 
     if (deviceId == null) {
       // Return from cache if no deviceId
-      logInfo('📦 [getNotifications] No device_id, returning from CACHE');
       return _getCachedNotifications();
     }
 
@@ -264,10 +263,6 @@ class FirebasePushRepository {
       final response = await _apiClient.getList(
         '/notifications/$deviceId',
         queryParameters: queryParams,
-      );
-
-      logInfo(
-        '📱 [getNotifications] Response from BACKEND: ${response.length}',
       );
 
       final notifications = response

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 /// Notification type - defines target audience
@@ -94,6 +95,24 @@ class FirebaseNotificationModel extends Equatable {
     final createdAtStr = json['created_at'] as String;
     final parsedTime = DateTime.parse(createdAtStr).toLocal();
 
+    // Parse data field - backend may send it as String or Map
+    Map<String, dynamic>? parsedData;
+    if (json['data'] != null) {
+      final dataValue = json['data'];
+      if (dataValue is String) {
+        // If data is a String, decode it to Map
+        try {
+          parsedData = jsonDecode(dataValue) as Map<String, dynamic>;
+        } catch (e) {
+          // If decoding fails, set to null
+          parsedData = null;
+        }
+      } else if (dataValue is Map) {
+        // If data is already a Map, use it directly
+        parsedData = Map<String, dynamic>.from(dataValue);
+      }
+    }
+
     return FirebaseNotificationModel(
       id: json['id'] as int,
       notificationType: NotificationType.fromString(
@@ -104,9 +123,7 @@ class FirebaseNotificationModel extends Equatable {
       ),
       title: json['title'] as String,
       body: json['body'] as String,
-      data: json['data'] != null
-          ? Map<String, dynamic>.from(json['data'] as Map)
-          : null,
+      data: parsedData,
       addresses: (json['addresses'] as List<dynamic>? ?? [])
           .map((a) => NotificationAddress.fromJson(a as Map<String, dynamic>))
           .toList(),
