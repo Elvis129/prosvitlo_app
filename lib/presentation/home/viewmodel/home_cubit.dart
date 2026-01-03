@@ -244,9 +244,19 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  /// Marks that donation dialog was shown
+  /// Marks that donation dialog was shown (tomorrow)
   Future<void> markDonationDialogShown() async {
     await _settingsRepository.markDonationDialogShown();
+  }
+
+  /// Mark dialog shown for specified days (after clicking "Support")
+  Future<void> markDonationDialogShownForDays(int days) async {
+    await _settingsRepository.markDonationDialogShownForDays(days);
+  }
+
+  /// Mark that user already donated (hide for 30 days)
+  Future<void> markUserAlreadyDonated() async {
+    await _settingsRepository.markDonationDialogShownForDays(30);
   }
 
   /// Reorder addresses by moving one from oldIndex to newIndex

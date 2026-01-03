@@ -178,6 +178,12 @@ abstract class AppLocalizations {
   /// **'Підтримати'**
   String get support;
 
+  /// No description provided for @alreadySupported.
+  ///
+  /// In uk, this message translates to:
+  /// **'Я вже підтримав'**
+  String get alreadySupported;
+
   /// No description provided for @errorLoadingData.
   ///
   /// In uk, this message translates to:

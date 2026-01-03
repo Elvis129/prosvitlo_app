@@ -87,129 +87,211 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               end: Alignment.bottomRight,
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Donation jar image
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Donation jar image
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  child: Image.asset(
+                    'assets/image/donat_mono.jpeg',
+                    width: double.infinity,
+                    height: 180,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                child: Image.asset(
-                  'assets/image/donat_mono.jpeg',
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryYellow,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.coffee,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Text(
-                            context.l10n.donationDialogTitle,
-                            style: AppTextStyles.heading2,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      context.l10n.donationDialogMessage,
-                      style: AppTextStyles.body.copyWith(
-                        color: AppColors.slateGray,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              side: BorderSide(color: AppColors.slateGray),
+                Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryYellow,
+                              borderRadius: BorderRadius.circular(12),
                             ),
+                            child: const Icon(
+                              Icons.coffee,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
                             child: Text(
-                              context.l10n.later,
-                              style: AppTextStyles.body.copyWith(
+                              context.l10n.donationDialogTitle,
+                              style: AppTextStyles.heading2,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      Text(
+                        context.l10n.donationDialogMessage,
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.slateGray,
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      // Row with "Пізніше" and "Я вже підтримав" buttons
+                      Row(
+                        children: [
+                          // "Пізніше" button - show tomorrow
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () => Navigator.pop(context),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                side: BorderSide(
+                                  color: AppColors.slateGray.withValues(
+                                    alpha: 0.5,
+                                  ),
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.schedule,
+                                size: 18,
                                 color: AppColors.slateGray,
+                              ),
+                              label: Text(
+                                context.l10n.later,
+                                style: AppTextStyles.body.copyWith(
+                                  color: AppColors.slateGray,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          flex: 2,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              // Capture localization before async gap
-                              final l10n = context.l10n;
-                              final messenger = ScaffoldMessenger.of(context);
-
-                              Navigator.pop(context);
-                              final uri = Uri.parse(donationUrl);
-                              try {
-                                await launchUrl(
-                                  uri,
-                                  mode: LaunchMode.externalApplication,
-                                );
-                              } catch (e) {
-                                if (mounted) {
-                                  messenger.showSnackBar(
-                                    SnackBar(
-                                      content: Text(l10n.errorOpeningLink),
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryYellow,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              elevation: 0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.favorite, size: 18),
-                                const SizedBox(width: 8),
-                                Text(
-                                  context.l10n.support,
-                                  style: AppTextStyles.body.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          const SizedBox(width: AppSpacing.sm),
+                          // "Я вже підтримав" button - hide for 30 days
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () async {
+                                final homeCubit = context.read<HomeCubit>();
+                                Navigator.pop(context);
+                                await homeCubit.markUserAlreadyDonated();
+                              },
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
                                 ),
-                              ],
+                                side: BorderSide(
+                                  color: AppColors.primaryBlue.withValues(
+                                    alpha: 0.6,
+                                  ),
+                                  width: 1.5,
+                                ),
+                              ),
+                              icon: Icon(
+                                Icons.check_circle_outline,
+                                size: 18,
+                                color: AppColors.primaryBlue,
+                              ),
+                              label: Text(
+                                context.l10n.alreadySupported,
+                                style: AppTextStyles.body.copyWith(
+                                  color: AppColors.primaryBlue,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      // "Підтримати" button - hide for 3 days
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColors.primaryYellow,
+                              AppColors.primaryYellow.withValues(alpha: 0.8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primaryYellow.withValues(
+                                alpha: 0.3,
+                              ),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // Capture before async gap
+                            final l10n = context.l10n;
+                            final messenger = ScaffoldMessenger.of(context);
+                            final homeCubit = context.read<HomeCubit>();
+
+                            Navigator.pop(context);
+
+                            // Mark as shown for 3 days
+                            await homeCubit.markDonationDialogShownForDays(3);
+
+                            // Open donation link
+                            final uri = Uri.parse(donationUrl);
+                            try {
+                              await launchUrl(
+                                uri,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            } catch (e) {
+                              if (mounted) {
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text(l10n.errorOpeningLink),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            shadowColor: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.favorite, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                context.l10n.support,
+                                style: AppTextStyles.body.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -222,14 +304,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       listeners: [
         BlocListener<SettingsCubit, SettingsState>(
           listenWhen: (previous, current) {
-            // Refresh when addresses list changes in Settings
+            // Refresh when addresses list changes in Settings (added/deleted)
             if (previous is SettingsLoaded && current is SettingsLoaded) {
-              return previous.addresses != current.addresses;
+              // Only refresh if count changed (address added or deleted)
+              return previous.addresses.length != current.addresses.length;
             }
             return false;
           },
           listener: (context, state) {
-            // Refresh HomeScreen when addresses are changed in SettingsScreen
+            // Refresh HomeScreen when addresses are added or deleted in SettingsScreen
             context.read<HomeCubit>().refreshAddresses();
           },
         ),
@@ -278,50 +361,54 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 return _buildNoAddresses(context);
               }
 
-              return RefreshIndicator(
-                onRefresh: () => context.read<HomeCubit>().refresh(),
-                child: ReorderableListView.builder(
-                  padding: const EdgeInsets.all(AppSpacing.lg),
-                  itemCount: state.addresses.length + 1,
-                  proxyDecorator: (child, index, animation) {
-                    // Remove default Material container and keep original card styling
-                    return AnimatedBuilder(
-                      animation: animation,
-                      builder: (context, child) {
-                        return Transform.scale(scale: 1.02, child: child);
-                      },
-                      child: child,
-                    );
-                  },
-                  onReorder: (oldIndex, newIndex) async {
-                    // Don't allow reordering the "Add Address" button
-                    if (oldIndex == state.addresses.length ||
-                        newIndex == state.addresses.length + 1) {
-                      return;
-                    }
-                    await context.read<HomeCubit>().reorderAddresses(
-                      oldIndex,
-                      newIndex,
-                    );
-                    // Settings screen will auto-refresh when user navigates to it
-                  },
-                  itemBuilder: (context, index) {
-                    if (index == state.addresses.length) {
-                      return _buildAddAddressButton(context);
-                    }
+              return Column(
+                children: [
+                  Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () => context.read<HomeCubit>().refresh(),
+                      child: ReorderableListView.builder(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        buildDefaultDragHandles:
+                            state.expandedAddressIds.isEmpty,
+                        itemCount: state.addresses.length,
+                        proxyDecorator: (child, index, animation) {
+                          // Use opacity animation instead of scale to prevent size issues
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        onReorder: (oldIndex, newIndex) {
+                          // Don't allow reordering if any card is expanded
+                          if (state.expandedAddressIds.isNotEmpty) {
+                            return;
+                          }
 
-                    final addressWithStatus = state.addresses[index];
-                    final isExpanded = state.expandedAddressIds.contains(
-                      addressWithStatus.address.id,
-                    );
+                          context.read<HomeCubit>().reorderAddresses(
+                            oldIndex,
+                            newIndex,
+                          );
+                        },
+                        itemBuilder: (context, index) {
+                          final addressWithStatus = state.addresses[index];
+                          final isExpanded = state.expandedAddressIds.contains(
+                            addressWithStatus.address.id,
+                          );
 
-                    return AddressCard(
-                      key: ValueKey(addressWithStatus.address.id),
-                      addressWithStatus: addressWithStatus,
-                      isExpanded: isExpanded,
-                    );
-                  },
-                ),
+                          return AddressCard(
+                            key: ValueKey(addressWithStatus.address.id),
+                            addressWithStatus: addressWithStatus,
+                            isExpanded: isExpanded,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.lg),
+                    child: _buildAddAddressButton(context),
+                  ),
+                ],
               );
             }
 
@@ -362,7 +449,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   /// No addresses state widget
   Widget _buildNoAddresses(BuildContext context) {
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -417,35 +504,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   /// Add address button widget
   Widget _buildAddAddressButton(BuildContext context) {
-    return Padding(
-      key: const ValueKey('add_address_button'),
-      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
-      child: OutlinedButton.icon(
-        onPressed: () async {
-          // Capture cubits before async gap
-          final homeCubit = context.read<HomeCubit>();
-          final settingsCubit = context.read<SettingsCubit>();
+    return OutlinedButton.icon(
+      onPressed: () async {
+        // Capture cubits before async gap
+        final homeCubit = context.read<HomeCubit>();
+        final settingsCubit = context.read<SettingsCubit>();
 
-          await context.push(AppRouter.addressSearch);
-          if (mounted) {
-            homeCubit.refreshAddresses();
-            settingsCubit.refreshSettings();
-          }
-        },
-        icon: const Icon(Icons.add),
-        label: Text(
-          context.l10n.homeAddOneMoreAddress,
-          textAlign: TextAlign.center,
+        await context.push(AppRouter.addressSearch);
+        if (mounted) {
+          homeCubit.refreshAddresses();
+          settingsCubit.refreshSettings();
+        }
+      },
+      icon: const Icon(Icons.add),
+      label: Text(
+        context.l10n.homeAddOneMoreAddress,
+        textAlign: TextAlign.center,
+      ),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.lg,
+          horizontal: AppSpacing.xxxl,
         ),
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          side: BorderSide(
-            color: AppColors.primaryBlue.withValues(alpha: 0.5),
-            width: 2,
-          ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        side: BorderSide(
+          color: AppColors.primaryBlue.withValues(alpha: 0.5),
+          width: 2,
         ),
       ),
     );

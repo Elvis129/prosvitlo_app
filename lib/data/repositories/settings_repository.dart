@@ -44,4 +44,9 @@ class SettingsRepository {
   Future<bool> markDonationDialogShown() {
     return _storageService.saveDonationDialogShownDate(DateTime.now());
   }
+
+  /// Mark donation dialog as shown and hide for specified number of days
+  Future<bool> markDonationDialogShownForDays(int days) {
+    return _storageService.markDonationDialogShownFor(days);
+  }
 }

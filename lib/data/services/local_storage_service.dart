@@ -183,6 +183,13 @@ class LocalStorageService {
     return daysSinceLastShown >= daysInterval;
   }
 
+  /// Mark donation dialog as shown and schedule next show after specified days
+  /// [daysUntilNextShow] Number of days until the dialog should be shown again
+  Future<bool> markDonationDialogShownFor(int daysUntilNextShow) {
+    final futureDate = DateTime.now().add(Duration(days: daysUntilNextShow));
+    return saveDonationDialogShownDate(futureDate);
+  }
+
   // === Clear All Data ===
 
   /// Clear all stored data (use with caution)

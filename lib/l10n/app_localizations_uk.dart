@@ -51,6 +51,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get support => 'Підтримати';
 
   @override
+  String get alreadySupported => 'Я вже підтримав';
+
+  @override
   String get errorLoadingData => 'Не вдалося завантажити дані';
 
   @override

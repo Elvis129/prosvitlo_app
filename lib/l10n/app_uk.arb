@@ -19,6 +19,7 @@
   "noData": "Немає даних",
   "copy": "Копіювати",
   "support": "Підтримати",
+  "alreadySupported": "Я вже підтримав",
   
   "errorLoadingData": "Не вдалося завантажити дані",
   "errorOpeningLink": "Не вдалося відкрити посилання",
